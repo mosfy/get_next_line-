@@ -5,62 +5,16 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: mosfy <mosfy@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/11/24 16:23:27 by tfrances          #+#    #+#             */
-/*   Updated: 2025/12/02 18:13:02 by mosfy            ###   ########.fr       */
+/*   Created: 2025/12/05 19:45:00 by mosfy             #+#    #+#             */
+/*   Updated: 2025/12/05 19:21:32 by mosfy            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-int	checkbackn(char *s)
+static char	*extractline(char *save)
 {
-	int	i;
-
-	i = 0;
-	if (!s)
-		return (1);
-	while (s[i])
-	{
-		if (s[i] == '\n')
-			return (0);
-		i++;
-	}
-	return (1);
-}
-
-char	*ft_strjoin_mod(char *s1, char *s2)
-{
-	int		i;
-	int		j;
-	char	*r;
-
-	if (!s1)
-	{
-		s1 = malloc(1);
-		if (!s1)
-			return (NULL);
-		s1[0] = '\0';
-	}
-	r = malloc(ft_strlen(s1) + ft_strlen(s2) + 1);
-	if (!r)
-		return (NULL);
-	i = 0;
-	while (s1[i])
-	{
-		r[i] = s1[i];
-		i++;
-	}
-	j = 0;
-	while (s2[j])
-		r[i++] = s2[j++];
-	r[i] = '\0';
-	free(s1);
-	return (r);
-}
-
-char	*extractline(char *save)
-{
-	int		i;
+	size_t	i;
 	char	*line;
 
 	if (!save || save[0] == '\0')
@@ -68,7 +22,7 @@ char	*extractline(char *save)
 	i = 0;
 	while (save[i] && save[i] != '\n')
 		i++;
-	line = malloc(i + (save[i] == '\n') + 1);
+	line = (char *)malloc(i + (save[i] == '\n') + 1);
 	if (!line)
 		return (NULL);
 	i = 0;
@@ -83,22 +37,33 @@ char	*extractline(char *save)
 	return (line);
 }
 
-char	*cleansave(char *save)
+static size_t	nl_pos(char *save)
 {
-	int		i;
-	int		j;
-	char	*sret;
+	size_t	i;
 
+	if (!save)
+		return ((size_t) - 1);
 	i = 0;
 	while (save[i] && save[i] != '\n')
 		i++;
 	if (!save[i])
+		return ((size_t) - 1);
+	return (i + 1);
+}
+
+static char	*cleansave(char *save)
+{
+	size_t	i;
+	size_t	j;
+	char	*sret;
+
+	i = nl_pos(save);
+	if (i == (size_t)-1)
 	{
 		free(save);
 		return (NULL);
 	}
-	i++;
-	sret = malloc(ft_strlen(save) - i + 1);
+	sret = (char *)malloc(ft_strlen(save) - i + 1);
 	if (!sret)
 	{
 		free(save);
@@ -112,60 +77,39 @@ char	*cleansave(char *save)
 	return (sret);
 }
 
-char *get_next_line(int fd)
+static char	*read_to_save(int fd, char *save)
 {
-    static char *save;
-    char tmp[BUFFER_SIZE + 1];
-    int nbread;
-    char *line;
+	char	*buf;
+	char	*res;
 
-    if (fd < 0 || BUFFER_SIZE <= 0)
-        return (NULL);
-
-    nbread = 1;
-    while (checkbackn(save) && nbread > 0)
-    {
-        nbread = read(fd, tmp, BUFFER_SIZE);
-        if (nbread < 0)
-        {
-            free(save);
-            save = NULL;
-            return (NULL);  // Handle read error
-        }
-
-        if (nbread == 0)  // End of file
-            break;
-
-        tmp[nbread] = '\0';
-        save = ft_strjoin_mod(save, tmp);
-        if (!save)
-            return (NULL);  // Return NULL if memory allocation fails
-    }
-
-    line = extractline(save);  // Extract line from save buffer
-    if (!line)
-        return (NULL);  // Return NULL if no line found
-
-    save = cleansave(save);  // Clean up static buffer
-    return (line);
+	buf = (char *)malloc(BUFFER_SIZE + 1);
+	if (!buf)
+	{
+		free(save);
+		return (NULL);
+	}
+	res = read_loop(fd, save, buf);
+	free(buf);
+	return (res);
 }
 
+char	*get_next_line(int fd)
+{
+	static char	*save[OPEN_MAX];
+	char		*line;
 
-// int	main(void)
-// {
-// 	int		fd;
-// 	char	*line;
-
-// 	fd = open("mon_fichier.txt", O_RDONLY);
-// 	if (fd == -1)
-// 	{
-// 		return (1);
-// 	}
-// 	while ((line = get_next_line(fd)) != NULL)
-// 	{
-// 		printf("%s", line);
-// 		free(line);
-// 	}
-// 	close(fd);
-// 	return (0);
-// }
+	if (fd < 0 || fd >= OPEN_MAX || BUFFER_SIZE <= 0)
+		return (NULL);
+	save[fd] = read_to_save(fd, save[fd]);
+	if (!save[fd])
+		return (NULL);
+	line = extractline(save[fd]);
+	if (!line)
+	{
+		free(save[fd]);
+		save[fd] = NULL;
+		return (NULL);
+	}
+	save[fd] = cleansave(save[fd]);
+	return (line);
+}

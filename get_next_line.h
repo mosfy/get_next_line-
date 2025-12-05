@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: mosfy <mosfy@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/11/24 16:25:51 by tfrances          #+#    #+#             */
-/*   Updated: 2025/12/02 16:56:37 by mosfy            ###   ########.fr       */
+/*   Created: 2025/12/05 19:45:00 by mosfy             #+#    #+#             */
+/*   Updated: 2025/12/05 19:18:16 by mosfy            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,13 +17,17 @@
 #  define BUFFER_SIZE 4
 # endif
 
-# include <fcntl.h>
-# include <stdio.h>
+# ifndef OPEN_MAX
+#  define OPEN_MAX 1024
+# endif
+
 # include <stdlib.h>
-# include <sys/stat.h>
 # include <unistd.h>
 
 size_t	ft_strlen(const char *s);
+int		checkbackn(char *s);
+char	*ft_strjoin_mod(char *s1, char *s2);
+char	*read_loop(int fd, char *save, char *buf);
 char	*get_next_line(int fd);
 
 #endif
