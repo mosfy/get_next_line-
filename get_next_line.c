@@ -6,7 +6,7 @@
 /*   By: mosfy <mosfy@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/05 19:45:00 by mosfy             #+#    #+#             */
-/*   Updated: 2025/12/05 19:21:32 by mosfy            ###   ########.fr       */
+/*   Updated: 2026/01/22 18:50:59 by mosfy            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,3 +113,21 @@ char	*get_next_line(int fd)
 	save[fd] = cleansave(save[fd]);
 	return (line);
 }
+/*
+int main()
+{
+ 	int		fd;
+ 	char	*line;
+ 	fd = open("giant_line.txt", O_RDONLY);
+ 	if (fd == -1)
+ 	{
+ 		return (1);
+ 	}
+ 	while ((line = get_next_line(fd)) != NULL)
+ 	{
+ 		printf("%s", line);
+ 		free(line);
+ 	}
+ 	close(fd);
+ 	return (0);
+}*/

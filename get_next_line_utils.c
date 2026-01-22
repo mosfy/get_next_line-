@@ -6,7 +6,7 @@
 /*   By: mosfy <mosfy@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/05 19:45:00 by mosfy             #+#    #+#             */
-/*   Updated: 2025/12/05 19:21:59 by mosfy            ###   ########.fr       */
+/*   Updated: 2026/01/22 19:57:56 by mosfy            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,8 @@ size_t	ft_strlen(const char *s)
 {
 	size_t	i;
 
+	if (!s)
+		return (0);
 	i = 0;
 	while (s[i])
 		i++;
@@ -89,11 +91,11 @@ char	*read_loop(int fd, char *save, char *buf)
 
 	nbread = 1;
 	buf[0] = '\0';
-	while (checkbackn(buf) && nbread > 0)
+	while (checkbackn(save) && nbread > 0)
 	{
 		nbread = read(fd, buf, BUFFER_SIZE);
 		if (nbread <= 0)
-			break ;
+			break;
 		buf[nbread] = '\0';
 		save = ft_strjoin_mod(save, buf);
 		if (!save)

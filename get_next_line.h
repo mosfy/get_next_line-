@@ -6,7 +6,7 @@
 /*   By: mosfy <mosfy@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/05 19:45:00 by mosfy             #+#    #+#             */
-/*   Updated: 2025/12/05 19:18:16 by mosfy            ###   ########.fr       */
+/*   Updated: 2026/01/22 19:54:32 by mosfy            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 # define GET_NEXT_LINE_H
 
 # ifndef BUFFER_SIZE
-#  define BUFFER_SIZE 4
+#  define BUFFER_SIZE 10
 # endif
 
 # ifndef OPEN_MAX
@@ -23,6 +23,8 @@
 
 # include <stdlib.h>
 # include <unistd.h>
+# include <fcntl.h>
+# include <stdio.h>
 
 size_t	ft_strlen(const char *s);
 int		checkbackn(char *s);
